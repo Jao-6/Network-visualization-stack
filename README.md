@@ -14,6 +14,7 @@ We are trying to achieve simple network visualization, with the Mikrotik's Traff
 
 
 ## Step 1 - Get the ELK stack working
+We got the ELK stack workig by using pre made dockerfile from the repository [docker-quick-elastic-netflow](https://github.com/arktronic/docker-quick-elastic-netflow).
 ## Step 2 - Configure router
 ## Step 3 - Generate traffic on the network
 ## Step 4 - Finish ELK stack setup
