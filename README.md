@@ -9,9 +9,11 @@ We are trying to achieve simple network visualization, with Raspberry Pi and the
 
 [ ] - 2. Configure router
 
-[ ] - 3. Get the ELK stack working
+[ ] - 3. Get nfacctd working
 
-[ ] - 4. Get nfacctd working
+[ ] - 4. Get the ELK stack working
+
+[ ] - 5. Run everything on startup
 
 [ ] - 5. Get Kibana to display desired data
 
@@ -50,6 +52,7 @@ We are trying to achieve simple network visualization, with Raspberry Pi and the
     Packet Sampling: [ ]
   
   In section IPFIX select everything.
+
   3. Press button **Targets**, and button **Add New**
 
     Enabled: [x]
@@ -59,17 +62,262 @@ We are trying to achieve simple network visualization, with Raspberry Pi and the
     Version: 9,
     v9/IPFIX Template Refresh: 20
     v9/IPFIX Template Timeout 1800
-  Press Apply
-    4. Move to menu IP > DHCP server
+  
+  Press **Apply**
+    
+  4. Move to menu IP > DHCP server
 
+  Select tab **Leases**.
+  In table select IP address of Raspbbery Pi and in the new oppened window on the right side press button **Make static**.
 
-## Step 3 - Get the ELK stack working
+## Step 3 - Install and configure NFACCTD
+
+  1. Install dependencies
+
+    sudo apt install -y git curl wget build-essential \ libpcap-dev libtool libtool-bin \ autoconf automake pkg-config
+
+  2. Download
+
+    git clone https://github.com/pmacct/pmacct.git
+
+  3. Move to folder
+
+    cd pmacct
+  4. Enable features
+
+    ./autogen.sh
+    ./configure \
+      --enable-nfprobe \
+      --enable-netflow \
+      --enable-pluggable-output \
+      --enable-l2 \
+      --enable-traffic-bins \
+      --enable-bgp-bins \
+      --enable-bmp-bins \
+      --enable-st-bins
+
+  5. Build
+
+    make
+    sudo make install
+  6. Make folder
+
+    sudo mkdir -p /etc/pmacct
+  7. Create configuration file and enter the config
+
+    sudo nano /etc/pmacct/nfacctd.conf
+
+Config:
+
+    plugins: print
+    daemonize: true
+    pidfile: /home/rbpi/nfacctd.pid
+    
+    nfacctd_port: 2055
+    nfacctd_ip: 0.0.0.0
+    aggregate: src_host, dst_host, src_port, dst_port, proto
+    
+    print_output_file: /home/rbpi/flows.log
+    print_output: formatted
+    print_output_file_append: true
+    print_refresh_time: 5
+
+## Step 4 - Get the ELK stack working
 We got the ELK stack workig by using version 7.10.2 that are deffinetly compatible troughout the stack.
-### + ELASTICSEARCH
+###  - ELASTICSEARCH
+  1. Download
+
+    wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.10.2-linux-aarch64.tar.gz
+    
+  2. Extract
+
+    tar -xzf elasticsearch-7.10.2-linux-aarch64.tar.gz
+
+  3. Move to folder
+
+    cd elasticsearch-7.10.2/
+
+  4. Create configuration file and enter the config
+
+    nano config/elasticsearch.yml
+
+Config:
+
+    network.host: 0.0.0.0
+    discovery.type: single-node
+
+###  - LOGSTASH
+  1. Download
+
+    wget https://artifacts.elastic.co/downloads/logstash/logstash-7.10.2-linux-aarch64.tar.gz
+
+  2. Extract
+
+    tar -xzf logstash-7.10.2-linux-aarch64.tar.gz
+
+  3. Move to folder
+
+    cd logstash-7.10.2
+
+  4. Create configuration file and enter the config
+
+    nano config/nfacctd.conf
+    
+Config:
+
+    input {
+      file {
+    	path => "/home/rbpi/flows.log"
+    	start_position => "beginning"
+    	sincedb_path => "/dev/null"
+      }
+    }
+    
+    filter {
+      grok {
+    	match => {
+      	"message" => [
+        	"%{IPV4:src_ip}\s+%{IPV4:dst_ip}\s+%{INT:src_port}\s+%{INT:dst_port}\s+%{WORD:protocol}\s+%{INT:packets}\s+%{INT:bytes}",
+        	"%{IPV6:src_ip}\s+%{IPV6:dst_ip}\s+%{INT:src_port}\s+%{INT:dst_port}\s+%{NOTSPACE:protocol}\s+%{INT:packets}\s+%{INT:bytes}"
+      	]
+    	}
+      }
+    
+      mutate {
+    	convert => {
+      	"src_port" => "integer"
+      	"dst_port" => "integer"
+      	"packets"  => "integer"
+      	"bytes"	=> "integer"
+    	}
+      }
+    }
+    
+    
+    output {
+      elasticsearch {
+    	hosts => ["http://localhost:9200"]
+    	index => "nfacctd-flows"
+      }
+      stdout { codec => rubydebug }
+    }
+
+###  - KIBANA
+  1. Download
+
+    wget https://artifacts.elastic.co/downloads/kibana/kibana-7.10.2-linux-aarch64.tar.gz
+
+  2. Extract
+
+    tar -xzf kibana-7.10.2-linux-aarch64.tar.gz
+
+  3. Move to folder
+
+    cd kibana-7.10.2-linux-aarch64
+
+  4. Create configuration file and enter the config
+
+    nano config/kibana.yml
+    
+Config:
+
+    server.host: "0.0.0.0"
+    elasticsearch.hosts: ["http://192.168.88.251:9200"]
+    elasticsearch.username: "admin"
+    elasticsearch.password: "admin"
 
 
+## Step 5 - Run everything on startup
+###  - NFACCTD
+Create configuration file and enter the config
 
-## Step 4 - Get nfacctd working
+    sudo nano /etc/systemd/system/nfacctd.service
+Config:
 
+    [Unit]
+    Description=pmacct NetFlow Collector (nfacctd)
+    After=network.target
+    
+    [Service]
+    ExecStart=/usr/local/sbin/nfacctd -f /etc/pmacct/nfacctd.conf
+    Restart=on-failure
+    User=rbpi
+    WorkingDirectory=/home/rbpi
+    StandardOutput=journal
+    StandardError=journal
+    
+    [Install]
+    WantedBy=multi-user.target
+
+###  - ELASTICSEARCH
+Create configuration file and enter the config
+
+    sudo nano /etc/systemd/system/elasticsearch.service
+Config:
+
+    [Unit]
+    Description=Elasticsearch
+    After=network.target
+    
+    [Service]
+    Type=simple
+    User=rbpi
+    ExecStart=/home/rbpi/elasticsearch-7.10.2/bin/elasticsearch
+    Restart=always
+    LimitNOFILE=65535
+    
+    [Install]
+    WantedBy=multi-user.target
+
+###  - LOGSTASH
+Create configuration file and enter the config
+
+    sudo nano /etc/systemd/system/logstash.service
+Config:
+
+    [Unit]
+    Description=Logstash
+    After=elasticsearch.service
+    
+    [Service]
+    Type=simple
+    User=rbpi
+    ExecStart=/home/rbpi/logstash-7.10.2/bin/logstash -f /home/rbpi/logstash-7.10.2/config/nfacctd.conf
+    Restart=always
+    
+    [Install]
+    WantedBy=multi-user.target
+
+###  - KIBANA
+Create configuration file and enter the config
+
+    sudo nano /etc/systemd/system/kibana.service
+Config:
+
+    [Unit]
+    Description=Kibana
+    After=logstash.service
+    
+    [Service]
+    Type=simple
+    User=rbpi
+    ExecStart=/home/rbpi/kibana-7.10.2-linux-aarch64/bin/kibana
+    Restart=always
+    
+    [Install]
+    WantedBy=multi-user.target
+
+###  - ENABLE SERVICES
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable elasticsearch
+    sudo systemctl enable logstash
+    sudo systemctl enable kibana
+    sudo systemctl enable nfacctd
+    
+    sudo systemctl start elasticsearch
+    sudo systemctl start logstash
+    sudo systemctl start kibana
+    sudo systemctl start nfacctd
 
 ## Step 5 - Get Kibana to display desired data
