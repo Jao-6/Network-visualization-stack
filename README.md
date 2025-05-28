@@ -188,8 +188,8 @@ Config:
     	path => "/home/rbpi/flows.log"
     	start_position => "beginning"
     	sincedb_path => "/dev/null"
-      stat_interval => 1
-      discover_interval => 1
+    	stat_interval => 1
+    	discover_interval => 1
       }
     }
     
