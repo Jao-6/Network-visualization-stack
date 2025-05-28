@@ -132,7 +132,7 @@ Config:
     print_output_file: /home/rbpi/flows.log
     print_output: formatted
     print_output_file_append: true
-    print_refresh_time: 5
+    print_refresh_time: 1
 
 ## Step 4 - Get the ELK stack working
 We got the ELK stack workig by using version 7.10.2 that are deffinetly compatible troughout the stack.
@@ -188,6 +188,8 @@ Config:
     	path => "/home/rbpi/flows.log"
     	start_position => "beginning"
     	sincedb_path => "/dev/null"
+      stat_interval => 1
+      discover_interval => 1
       }
     }
     
