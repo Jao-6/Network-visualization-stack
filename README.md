@@ -15,7 +15,7 @@ We are trying to achieve simple network visualization, with Raspberry Pi and the
 
 [ ] - 5. Run everything on startup
 
-[ ] - 5. Get Kibana to display desired data
+[ ] - 6. Get Kibana to display desired data
 
 
 ## Step 1 - Prepare Raspberry PI
@@ -320,4 +320,4 @@ Config:
     sudo systemctl start kibana
     sudo systemctl start nfacctd
 
-## Step 5 - Get Kibana to display desired data
+## Step 6 - Get Kibana to display desired data
