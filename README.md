@@ -39,6 +39,29 @@ We are trying to achieve simple network visualization, with Raspberry Pi and the
 
 ## Step 2 - Configure router
 
+  1. Login to Webfig at 192.168.88.1
+  2. Move to menu IP > Traffic Flow
+
+    Enabled: [x]
+    Interfaces: all
+    Cache Entries: 32k
+    Active Flow Timeout: 00:30:00
+    Inactive Flow Timeout: 00:00:15
+    Packet Sampling: [ ]
+  
+  In section IPFIX select everything.
+  3. Press button **Targets**, and button **Add New**
+
+    Enabled: [x]
+    Src. Address: 192.168.88.1 (IP of Mikrotik router)
+    Dst. Address 192.168.88.251 (IP of Raspberry PI)
+    Port: 2055
+    Version: 9,
+    v9/IPFIX Template Refresh: 20
+    v9/IPFIX Template Timeout 1800
+  Press Apply
+    4. Move to menu IP > DHCP server
+
 
 ## Step 3 - Get the ELK stack working
 We got the ELK stack workig by using version 7.10.2 that are deffinetly compatible troughout the stack.
