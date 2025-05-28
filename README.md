@@ -267,7 +267,9 @@ Config:
     After=network.target
     
     [Service]
+    Type=forking
     ExecStart=/usr/local/sbin/nfacctd -f /etc/pmacct/nfacctd.conf
+    PIDFile=/home/rbpi/nfacctd.pid
     Restart=on-failure
     User=rbpi
     WorkingDirectory=/home/rbpi
@@ -276,6 +278,7 @@ Config:
     
     [Install]
     WantedBy=multi-user.target
+
 
 ###  - ELASTICSEARCH
 Create configuration file and enter the config
