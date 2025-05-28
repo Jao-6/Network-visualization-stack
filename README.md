@@ -20,8 +20,22 @@ We are trying to achieve simple network visualization, with Raspberry Pi and the
 
 ## Step 1 - Prepare Raspberry PI
 
-  1. Create user named rbpi
-  2. Connect to ethernet or WiFi
+  1. Complete guided starting proces
+
+  - Create user with username: rbpi
+  - Connect to ethernet or WiFi of the Mikrotik router
+
+  2. Enable SSH for easier configuration
+
+    sudo raspi-config
+Go to "Interface options" > "SSH" and select **Yes**.
+
+If you couldn't connect to WiFi on starting proces, do it here in "System Options" > "Wireless LAN"
+
+Select **FINISH**.
+
+Now you can SSH to the Raspberry PI from your computer if they are connected to the same network.
+
   3. Update Raspberry PI
 
     sudo apt update
