@@ -5,17 +5,17 @@ We are trying to achieve simple network visualization, with Raspberry Pi and the
 !Follow these instructions precisely and you can just copy and paste!
 
 ## Steps
-[ ] - 1. Prepare RBPI
+* [x] - 1. Prepare RBPI
 
-[ ] - 2. Configure router
+* [x] - 2. Configure router
 
-[ ] - 3. Get nfacctd working
+* [x] - 3. Get nfacctd working
 
-[ ] - 4. Get the ELK stack working
+* [x] - 4. Get the ELK stack working
 
-[ ] - 5. Run everything on startup
+* [x] - 5. Run everything on startup
 
-[ ] - 6. Get Kibana to display desired data
+* [x] - 6. Get Kibana to display desired data
 
 
 ## Step 1 - Prepare Raspberry PI
@@ -28,23 +28,29 @@ We are trying to achieve simple network visualization, with Raspberry Pi and the
   2. Enable SSH for easier configuration
 
     sudo raspi-config
-Go to "Interface options" > "SSH" and select **Yes**.
+  
+  -  Go to "Interface options" > "SSH" and select **Yes**.
 
-If you couldn't connect to WiFi on starting proces, do it here in "System Options" > "Wireless LAN"
+  - If you couldn't connect to WiFi on starting proces, do it here in "System Options" > "Wireless LAN"
 
-Select **FINISH**.
+  - Select **FINISH**.
 
-Now you can SSH to the Raspberry PI from your computer if they are connected to the same network.
+  - Now you can SSH to the Raspberry PI from your computer if they are connected to the same network.
 
-  3. Update Raspberry PI
+   3. Update Raspberry PI
 
     sudo apt update
+
+```bash
+sudo apt upgrade -y
+```
   4. Install Java version 11
 
-    sudo apt install openjdk-11-jdk -y
+    sudo apt update && sudo apt install -y wget gnupg && wget -qO - https://repos.azul.com/azul-repo.key | sudo apt-key add - && echo "deb http://repos.azul.com/zulu/deb stable main" | sudo tee /etc/apt/sources.list.d/zulu.list && sudo apt update && sudo apt install -y zulu11-jdk
+
   5. Install UFW
 
-    sudo apt-get install ufw
+    sudo apt-get install ufw -y
   6. Open ports
 
     sudo ufw allow 5601
@@ -88,7 +94,7 @@ Now you can SSH to the Raspberry PI from your computer if they are connected to 
 
   1. Install dependencies
 
-    sudo apt install -y git curl wget build-essential \ libpcap-dev libtool libtool-bin \ autoconf automake pkg-config
+    sudo apt update && sudo apt install -y git curl wget build-essential libpcap-dev libtool libtool-bin autoconf automake pkg-config
 
   2. Download
 
@@ -99,20 +105,12 @@ Now you can SSH to the Raspberry PI from your computer if they are connected to 
     cd pmacct
   4. Enable features
 
-    ./autogen.sh
-    ./configure \
-      --enable-nfprobe \
-      --enable-netflow \
-      --enable-pluggable-output \
-      --enable-l2 \
-      --enable-traffic-bins \
-      --enable-bgp-bins \
-      --enable-bmp-bins \
-      --enable-st-bins
+    ./configure --enable-l2 --enable-traffic-bins --enable-bgp-bins --enable-bmp-bins --enable-st-bins
 
   5. Build
 
-    make
+    make -j$(nproc)
+
     sudo make install
   6. Make folder
 
@@ -139,6 +137,9 @@ Config:
 ## Step 4 - Get the ELK stack working
 We got the ELK stack workig by using version 7.10.2 that are deffinetly compatible troughout the stack.
 ###  - ELASTICSEARCH
+  0. Move to home folder
+
+    cd --
   1. Download
 
     wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.10.2-linux-aarch64.tar.gz
@@ -161,6 +162,9 @@ Config:
     discovery.type: single-node
 
 ###  - LOGSTASH
+  0. Move to home folder
+
+    cd --
   1. Download
 
     wget https://artifacts.elastic.co/downloads/logstash/logstash-7.10.2-linux-aarch64.tar.gz
@@ -217,6 +221,9 @@ Config:
     }
 
 ###  - KIBANA
+  0. Move to home folder
+
+    cd --
   1. Download
 
     wget https://artifacts.elastic.co/downloads/kibana/kibana-7.10.2-linux-aarch64.tar.gz
@@ -240,6 +247,13 @@ Config:
     elasticsearch.username: "admin"
     elasticsearch.password: "admin"
 
+###  - Permissions
+  0. Move to home folder
+
+    cd --
+  1. Give rights to user
+
+    sudo chown -R rbpi:rbpi /home/rbpi/elasticsearch-7.10.2 /home/rbpi/kibana-7.10.2-linux-aarch64 /home/rbpi/logstash-7.10.2
 
 ## Step 5 - Run everything on startup
 ###  - NFACCTD
