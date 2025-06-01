@@ -354,3 +354,91 @@ Config:
     sudo systemctl start nfacctd
 
 ## Step 6 - Get Kibana to display desired data
+
+1. Access Grafana
+
+   - Open web browser and go to:
+
+          http://192.168.88.251:5601/
+
+2. Add Elasticsearch as a data source
+
+  1. Go to menu **Configuration** > **Data Sources**
+  2. Click **Add data source**
+  3. Select **Elasticsearch**
+  4. Configure:
+
+            URL: http://localhost:9200
+            Index name: nfacctd-flows
+            Time field name: @timestamp
+
+  5. Click **Save & Test**
+
+3. Create Visualizations
+
+  - Outgoing Ports (Pie Chart)
+
+    1. Go to **Dashboard** > **Add new panel**
+    2. Select **Visualization**: Pie Chart
+    3. Under **Query**:
+
+                Aggregation: Count
+                Group by: Terms
+                Field: src_port
+                Size: 10
+
+   4. Click **Apply** and **Save**
+
+  - Incoming Ports (Pie Chart)
+
+    1. Go to **Dashboard** > **Add new panel**
+    2. Select **Visualization**: Pie Chart
+    3. Under **Query**:
+
+                Aggregation: Count
+                Group by: Terms
+                Field: dst_port
+                Size: 10
+
+   4. Click **Apply** and **Save**
+
+  - Sum of Packets per Source IP (Bar Chart)
+
+    1. Go to **Dashboard** > **Add new panel**
+    2. Select **Visualization**: Bar Chart
+    3. Under **Query**:
+
+                Aggregation: Sum
+                Field: packets
+                Group by: Terms
+                Field: src_ip
+                Size: 10
+
+    4. Click **Apply** and **Save**
+
+  - Packets Over Time (Time Series)
+
+    1. Go to **Dashboard** > **Add new panel**
+    2. Select **Visualization**: Time Series
+    3. Under **Query**:
+
+                Aggregation: Sum
+                Field: packets
+                Group by: Date Histogram
+                Field: @timestamp
+                Interval: auto or 5s
+
+    4. Click **Apply** and **Save**
+
+4. Configure auto-refresh
+
+  1. In the dashboard top bar, click **Refresh**
+  2. Select **5s** for auto-refresh
+
+5. Save the dashboard
+
+  1. Click the **Save** icon
+  2. Name the dashboard **Network Visualization**
+  3. Select save with time
+  4. Click **Save**
+
