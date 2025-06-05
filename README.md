@@ -361,84 +361,125 @@ Config:
 
           http://192.168.88.251:5601/
 
-### 2. Add Elasticsearch as a data source
+### 2. Add Indices
 
-  1. Go to menu **Configuration** > **Data Sources**
-  2. Click **Add data source**
-  3. Select **Elasticsearch**
-  4. Configure:
-
-            URL: http://localhost:9200
-            Index name: nfacctd-flows
-            Time field name: @timestamp
-
-  5. Click **Save & Test**
+  1. Go to menu **Stack Management** > **Index Management**
+  2. Select listed indeks **nfacctd-flows**
+  3. Click **Save**
 
 ### 3. Create Visualizations
 
-#### - Outgoing Ports (Pie Chart)
+#### - Create dashboard
 
-  1. Go to **Dashboard** > **Add new panel**
-  2. Select **Visualization**: Pie Chart
-  3. Under **Query**:
+  1. Go to menu **Dashboard**
+  2. Select **Create dashboard**
+  3. Click **Clock**-icon before the time interval "Last 15 minutes"
+       3.1 At the bottom of popup set:
+
+    Refresh every: 5 seconds
+
+  3.2 Click **Start**
+  4. At the top of the page click **Save**
+    4.1 Set the Title
+    4.2 Select **Store time with dashboard**
+    4.3 Click **Save**
+
+#### - Outgoing Ports (Pie Chart)
+  1. Go to **Dashboard** > **Edit** > **Create new**
+  2. Select **New Visualization**: Pie
+  3. Select source **nfacctd-flows**
+  4. Under **Metrics**:
 
                 Aggregation: Count
-                Group by: Terms
-                Field: src_port
-                Size: 10
+  5. Under **Buckets**:
+  5.1 Click **Add**
+  5.2 Select **Split slices**
+  5.3 Set following settings:
 
-  4. Click **Apply** and **Save**
+         Aggregation: Terms
+         Field: dst_port
+         Order by: "Metric: Count"
+         Order: Descending
+         Size 5
+  6. Click **Update**
+  7. Click **Save**
+  7.1 Set the Title
+  7.2 Select **Add to Dashboard after saving**
+  7.3 Click **Save and return**
 
 #### - Incoming Ports (Pie Chart)
-
-  1. Go to **Dashboard** > **Add new panel**
-  2. Select **Visualization**: Pie Chart
-  3. Under **Query**:
+  1. Click **Create new**
+  2. Select **New Visualization**: Pie
+  3. Select source **nfacctd-flows**
+  4. Under **Metrics**:
 
                 Aggregation: Count
-                Group by: Terms
-                Field: dst_port
-                Size: 10
+  5. Under **Buckets**:
+  5.1 Click **Add**
+  5.2 Select **Split slices**
+  5.3 Set following settings:
 
-  4. Click **Apply** and **Save**
+         Aggregation: Terms
+         Field: src_port
+         Order by: "Metric: Count"
+         Order: Descending
+         Size 5
+  6. Click **Update**
+  7. Click **Save**
+  7.1 Set the Title
+  7.2 Select **Add to Dashboard after saving**
+  7.3 Click **Save and return**
 
-#### - Sum of Packets per Source IP (Bar Chart)
-
-  1. Go to **Dashboard** > **Add new panel**
-  2. Select **Visualization**: Bar Chart
-  3. Under **Query**:
-
-                Aggregation: Sum
-                Field: packets
-                Group by: Terms
-                Field: src_ip
-                Size: 10
-
-  4. Click **Apply** and **Save**
-
-#### - Packets Over Time (Time Series)
-
-  1. Go to **Dashboard** > **Add new panel**
-  2. Select **Visualization**: Time Series
-  3. Under **Query**:
+#### - Packets per IP (Bar Chart)
+  1. Click **Create new**
+  2. Select **New Visualization**: Horizontal Bar
+  3. Select source **nfacctd-flows**
+  4. Under **Metrics** > **Y-axis**:
 
                 Aggregation: Sum
                 Field: packets
-                Group by: Date Histogram
-                Field: @timestamp
-                Interval: auto or 5s
+  5. Under **Buckets**:
+  5.1 Click **Add**
+  5.2 Select **X-axis**
+  5.3 Set following settings:
 
-  4. Click **Apply** and **Save**
+         Aggregation: Terms
+         Field: src_ip.keyword
+         Order by: "Metric: Sum of packets"
+         Order: Descending
+         Size 5
+  6. Click **Update**
+  7. Click **Save**
+  7.1 Set the Title
+  7.2 Select **Add to Dashboard after saving**
+  7.3 Click **Save and return**
 
-### 4. Configure auto-refresh
 
-  1. In the dashboard top bar, click **Refresh**
-  2. Select **5s** for auto-refresh
+#### - Network usage per time (Bar Chart)
+  1. Click **Create new**
+  2. Select **New Visualization**: Line
+  3. Select source **nfacctd-flows**
+  4. Under **Metrics** > **Y-axis**:
 
+                Aggregation: Sum
+                Field: packets
+  6. Under **Buckets**:
+  5.1 Click **Add**
+  5.2 Select **X-axis**
+  5.3 Set following settings:
+
+         Aggregation: Date Histogram
+         Field: @timestamp
+         Minimum interval: Auto
+  6. Click **Update**
+  7. Click **Save**
+  7.1 Set the Title
+  7.2 Select **Add to Dashboard after saving**
+  7.3 Click **Save and return**
+     
 ### 5. Save the dashboard
 
-  1. Click the **Save** icon
-  2. Name the dashboard **Network Visualization**
-  3. Select save with time
+  1. Click **Save**
+  2. Select **Store time with dashboard**
   4. Click **Save**
 
