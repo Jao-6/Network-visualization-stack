@@ -4,6 +4,9 @@ We are trying to achieve simple network visualization, with Raspberry Pi and the
 
 !Follow these instructions precisely and you can just copy and paste!
 
+![Screenshot from 2025-06-05 12-05-33](https://github.com/user-attachments/assets/dcfce7f3-cc25-4ddc-ab04-b33ccd6cbce0)
+
+
 ## Steps
 * [x] - 1. Prepare RBPI
 
@@ -374,27 +377,37 @@ Config:
   1. Go to menu **Dashboard**
   2. Select **Create dashboard**
   3. Click **Clock**-icon before the time interval "Last 15 minutes"
+
        3.1 At the bottom of popup set:
 
     Refresh every: 5 seconds
 
+
   3.2 Click **Start**
+
   4. At the top of the page click **Save**
-    4.1 Set the Title
-    4.2 Select **Store time with dashboard**
-    4.3 Click **Save**
+      
+      4.1 Set the Title
+
+      4.2 Select **Store time with dashboard**
+
+      4.3 Click **Save**
 
 #### - Outgoing Ports (Pie Chart)
   1. Go to **Dashboard** > **Edit** > **Create new**
   2. Select **New Visualization**: Pie
   3. Select source **nfacctd-flows**
+
   4. Under **Metrics**:
 
                 Aggregation: Count
   5. Under **Buckets**:
-  5.1 Click **Add**
-  5.2 Select **Split slices**
-  5.3 Set following settings:
+
+      5.1 Click **Add**
+
+      5.2 Select **Split slices**
+
+      5.3 Set following settings:
 
          Aggregation: Terms
          Field: dst_port
@@ -403,10 +416,13 @@ Config:
          Size 5
   6. Click **Update**
   7. Click **Save**
-  7.1 Set the Title
-  7.2 Select **Add to Dashboard after saving**
-  7.3 Click **Save and return**
 
+      7.1 Set the Title
+
+      7.2 Select **Add to Dashboard after saving**
+
+      7.3 Click **Save and return**
+     
 #### - Incoming Ports (Pie Chart)
   1. Click **Create new**
   2. Select **New Visualization**: Pie
@@ -415,9 +431,12 @@ Config:
 
                 Aggregation: Count
   5. Under **Buckets**:
-  5.1 Click **Add**
-  5.2 Select **Split slices**
-  5.3 Set following settings:
+
+      5.1 Click **Add**
+
+      5.2 Select **Split slices**
+
+      5.3 Set following settings:
 
          Aggregation: Terms
          Field: src_port
@@ -426,9 +445,13 @@ Config:
          Size 5
   6. Click **Update**
   7. Click **Save**
-  7.1 Set the Title
-  7.2 Select **Add to Dashboard after saving**
-  7.3 Click **Save and return**
+
+      7.1 Set the Title
+
+      7.2 Select **Add to Dashboard after saving**
+
+      7.3 Click **Save and return**
+     
 
 #### - Packets per IP (Bar Chart)
   1. Click **Create new**
@@ -439,9 +462,12 @@ Config:
                 Aggregation: Sum
                 Field: packets
   5. Under **Buckets**:
-  5.1 Click **Add**
-  5.2 Select **X-axis**
-  5.3 Set following settings:
+
+      5.1 Click **Add**
+
+      5.2 Select **X-axis**
+
+      5.3 Set following settings:
 
          Aggregation: Terms
          Field: src_ip.keyword
@@ -450,9 +476,12 @@ Config:
          Size 5
   6. Click **Update**
   7. Click **Save**
-  7.1 Set the Title
-  7.2 Select **Add to Dashboard after saving**
-  7.3 Click **Save and return**
+
+      7.1 Set the Title
+
+      7.2 Select **Add to Dashboard after saving**
+
+      7.3 Click **Save and return**
 
 
 #### - Network usage per time (Bar Chart)
@@ -463,19 +492,25 @@ Config:
 
                 Aggregation: Sum
                 Field: packets
-  6. Under **Buckets**:
-  5.1 Click **Add**
-  5.2 Select **X-axis**
-  5.3 Set following settings:
+      5. Under **Buckets**:
+
+      5.1 Click **Add**
+
+      5.2 Select **X-axis**
+
+      5.3 Set following settings:
 
          Aggregation: Date Histogram
          Field: @timestamp
          Minimum interval: Auto
   6. Click **Update**
   7. Click **Save**
-  7.1 Set the Title
-  7.2 Select **Add to Dashboard after saving**
-  7.3 Click **Save and return**
+
+      7.1 Set the Title
+
+      7.2 Select **Add to Dashboard after saving**
+
+      7.3 Click **Save and return**
      
 ### 5. Save the dashboard
 
